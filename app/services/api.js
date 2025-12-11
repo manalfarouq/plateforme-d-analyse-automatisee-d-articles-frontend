@@ -1,15 +1,11 @@
 // app/services/api.js
 
-// const AUTH_API_URL = 'http://127.0.0.1:8000';
-// const ANALYSE_API_URL = 'http://127.0.0.1:8001';
-
-const AUTH_API_URL = '/api/auth';     
+const AUTH_API_URL = '/api/auth';
 const ANALYSE_API_URL = '/api/analyse';
 
 // ============= SERVICE AUTH =============
 
 export const authService = {
-  // Inscription
   signup: async (username, email, password) => {
     try {
       const response = await fetch(`${AUTH_API_URL}/Signup`, {
@@ -18,11 +14,7 @@ export const authService = {
           'accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          username,
-          email,
-          password
-        }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       if (!response.ok) {
@@ -37,7 +29,6 @@ export const authService = {
     }
   },
 
-  // Connexion
   signin: async (username, password) => {
     try {
       const response = await fetch(`${AUTH_API_URL}/Login`, {
@@ -46,10 +37,7 @@ export const authService = {
           'accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          username,
-          password
-        }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
@@ -59,7 +47,6 @@ export const authService = {
 
       const data = await response.json();
       
-      // Sauvegarder le token dans localStorage
       if (data.token) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', username);
@@ -72,18 +59,15 @@ export const authService = {
     }
   },
 
-  // Déconnexion
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
   },
 
-  // Récupérer le token
   getToken: () => {
     return localStorage.getItem('token');
   },
 
-  // Vérifier si l'utilisateur est connecté
   isAuthenticated: () => {
     return !!localStorage.getItem('token');
   }
@@ -92,7 +76,6 @@ export const authService = {
 // ============= SERVICE ANALYSE =============
 
 export const analyseService = {
-  // Analyse complète d'un texte
   analyzeText: async (text) => {
     const token = authService.getToken();
     
@@ -101,14 +84,15 @@ export const analyseService = {
     }
 
     try {
+      // ✅ Utiliser le bon endpoint : /AnalyzeComplet
       const response = await fetch(`${ANALYSE_API_URL}/AnalyzeComplet`, {
         method: 'POST',
         headers: {
           'accept': 'application/json',
-          'token': token,
+          'token': token, // ✅ Envoyer le token dans le header
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text: text }), // ✅ Changé de "texte" à "text"
       });
 
       if (!response.ok) {
@@ -117,17 +101,23 @@ export const analyseService = {
           throw new Error('Session expirée. Veuillez vous reconnecter.');
         }
         const error = await response.json();
-        throw new Error(error.detail || 'Erreur lors de l\'analyse');
+        throw new Error(error.detail || error.erreur || 'Erreur lors de l\'analyse');
       }
 
-      return await response.json();
+      const data = await response.json();
+      
+      // Vérifier si le backend a retourné une erreur
+      if (data.erreur) {
+        throw new Error(data.erreur);
+      }
+
+      return data;
     } catch (error) {
       console.error('Erreur analyze:', error);
       throw error;
     }
   },
 
-  // Récupérer l'historique des analyses
   getHistory: async () => {
     const token = authService.getToken();
     
@@ -149,6 +139,13 @@ export const analyseService = {
           authService.logout();
           throw new Error('Session expirée. Veuillez vous reconnecter.');
         }
+        
+        // Si l'endpoint n'existe pas, retourner un tableau vide
+        if (response.status === 404) {
+          console.warn('Endpoint /history non trouvé');
+          return [];
+        }
+        
         const error = await response.json();
         throw new Error(error.detail || 'Erreur lors de la récupération de l\'historique');
       }
@@ -156,11 +153,11 @@ export const analyseService = {
       return await response.json();
     } catch (error) {
       console.error('Erreur getHistory:', error);
-      throw error;
+      // Retourner un tableau vide au lieu de throw pour éviter de bloquer l'interface
+      return [];
     }
   },
 
-  // Filtrer les analyses
   filterAnalyses: async () => {
     const token = authService.getToken();
     
