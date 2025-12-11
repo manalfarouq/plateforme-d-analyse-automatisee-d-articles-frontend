@@ -46,14 +46,14 @@ export default function AuthPage() {
           formData.email,
           formData.password
         );
-        console.log('✅ Inscription réussie');
+        console.log('Inscription réussie');
         
         // Connexion automatique après inscription
         await authService.signin(formData.username, formData.password);
         router.push('/analyse');
       }
     } catch (err) {
-      console.error('❌ Erreur:', err);
+      console.error('Erreur:', err);
       setError(err.message || 'Une erreur est survenue');
     } finally {
       setLoading(false);
