@@ -126,7 +126,7 @@ export default function Header() {
           transform: translateX(-50%);
           display: flex;
           gap: 3rem;
-          z-index: 9998;
+          z-index: 20000;
           animation: fadeIn 0.6s ease forwards;
         }
 
