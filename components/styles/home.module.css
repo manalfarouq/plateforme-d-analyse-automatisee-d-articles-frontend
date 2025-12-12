@@ -1,0 +1,317 @@
+app/home.module.css
+
+/* Textes latéraux */
+.sideText {
+  position: fixed;
+  font-size: 0.75rem;
+  color: #1a1a1a;
+  font-weight: 300;
+  letter-spacing: 2px;
+  z-index: 99;
+  text-transform: uppercase;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 1;
+  transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.leftText {
+  left: 2rem;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.rightText {
+  right: 2rem;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.sideText.falling {
+  opacity: 0;
+  transform: translateY(100vh);
+}
+
+/* Texte fusionné au centre */
+.mergedText {
+  position: fixed;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100vh);
+  font-size: 0.7rem;
+  color: #1a1a1a;
+  font-weight: 300;
+  letter-spacing: 2px;
+  z-index: 98;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s;
+}
+
+.mergedText.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Titre principal avec animation */
+.fallingTitle {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-150%);
+  z-index: 97;
+  text-align: center;
+  opacity: 0;
+  transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s;
+}
+
+.fallingTitle.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.titleHybrid,
+.titleAnalyzer {
+  font-family: 'Moot Jungle', 'EB Garamond', serif;
+  font-size: 6rem;
+  font-weight: normal;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  color: #1a1a1a;
+  display: block;
+}
+
+.titleHybrid {
+  font-style: italic;
+}
+
+.titleAnalyzer {
+  margin-top: -0.5rem;
+}
+
+/* Background */
+.backgroundContainer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  transform: scale(1.05);
+  filter: blur(10px);
+  transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.backgroundContainer.visible {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
+
+.backgroundImage {
+  position: absolute;
+  inset: 0;
+  background-image: url('/back.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.backgroundOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Menu de navigation */
+.topMenu {
+  position: fixed;
+  top: 3rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50px);
+  display: flex;
+  gap: 4rem;
+  z-index: 50;
+  opacity: 0;
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.topMenu.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.menuItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+}
+
+.menuNum {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+.menuLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.menuItem:hover .menuLabel {
+  color: white;
+}
+
+.menuUnderline {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 80%;
+  height: 1px;
+  background: white;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menuItem:hover .menuUnderline {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* Animation d'expansion lors du clic */
+.expandingOverlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1px;
+  height: 1px;
+  background: white;
+  z-index: 90;
+  animation: expandOverlay 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes expandOverlay {
+  0% {
+    width: 1px;
+    height: 1px;
+    border-radius: 50%;
+  }
+  50% {
+    width: 100vw;
+    height: 2px;
+    border-radius: 0;
+  }
+  100% {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+}
+
+/* Écran de navigation */
+.navigationLoading {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  animation: fadeIn 0.3s ease;
+}
+
+.navLoader {
+  width: 300px;
+  height: 2px;
+  background: #f0f0f0;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.navLoaderBar {
+  width: 0;
+  height: 100%;
+  background: #1a1a1a;
+  animation: loadBar 1.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes loadBar {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+/* Textes dans les coins */
+.cornerText {
+  position: fixed;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 300;
+  letter-spacing: 1px;
+  z-index: 15;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 1s ease 0.5s;
+}
+
+.cornerText.visible {
+  opacity: 1;
+}
+
+.topLeft {
+  top: 2rem;
+  left: 2rem;
+}
+
+.bottomRight {
+  bottom: 2rem;
+  right: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .titleHybrid,
+  .titleAnalyzer {
+    font-size: 4rem;
+  }
+
+  .topMenu {
+    gap: 2rem;
+    top: 2rem;
+  }
+
+  .menuItem {
+    padding: 0.5rem 0.5rem;
+  }
+
+  .menuLabel {
+    font-size: 0.65rem;
+  }
+
+  .cornerText {
+    font-size: 0.55rem;
+  }
+
+  .sideText {
+    font-size: 0.65rem;
+  }
+
+  .mergedText {
+    font-size: 0.6rem;
+  }
+
+  .leftText {
+    left: 1rem;
+  }
+
+  .rightText {
+    right: 1rem;
+  }
+}
