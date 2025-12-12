@@ -1,31 +1,28 @@
-// app/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { authService } from './services/api';
-import Image from 'next/image';
 
 export default function Home() {
+  const [progress, setProgress] = useState(0);
+  const [loadingComplete, setLoadingComplete] = useState(false);
+  const [showBackground, setShowBackground] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [expandingIndex, setExpandingIndex] = useState<number | null>(null);
+  const [navigating, setNavigating] = useState(false);
+  const [isAuth] = useState(true);
+
   const router = useRouter();
-  const [progress, setProgress] = useState<number>(0);
-  const [loadingComplete, setLoadingComplete] = useState<boolean>(false);
-  const [showHero, setShowHero] = useState<boolean>(false);
-  
-  const [isAuth] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return authService.isAuthenticated();
-    }
-    return false;
-  });
 
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(interval);
+          // Séquence d'animations
           setTimeout(() => setLoadingComplete(true), 300);
-          setTimeout(() => setShowHero(true), 800);
+          setTimeout(() => setShowBackground(true), 1800);
+          setTimeout(() => setShowMenu(true), 2500);
           return 100;
         }
         return prev + 2;
@@ -35,27 +32,30 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleNavigate = (path: string): void => {
-    router.push(path);
-  };
+  const handleMenuClick = (index: number, path?: string) => {
+    setExpandingIndex(index);
+    setTimeout(() => setNavigating(true), 800);
+
+    // Navigation après l'animation complète
+    setTimeout(() => {
+    if (path) {
+      router.push(path); // navigue vers /auth ou autre
+    }
+  }, 1200); // délai correspondant à ton animation
+};
+
+  const menuItems = [
+    { num: '01', label: 'HOME', path: '/' },
+    { num: '02', label: 'LOGIN', path: '/auth' },
+    { num: '03', label: 'ANALYZE', path: isAuth ? '/analyse' : '/auth' },
+    { num: '04', label: 'CONTACT', path: '/contact' }
+  ];
 
   return (
     <>
       {/* Loading Screen */}
-      <div className={`loading-screen ${loadingComplete ? 'hidden' : ''}`}>
+      {/* <div className={`loading-screen ${loadingComplete ? 'falling' : ''}`}>
         <div className="loading-content">
-          <div className="illustration-wrapper">
-            <div className="light-beam"></div>
-            <Image 
-              src="/im1.png"
-              alt="Loading"
-              width={350}
-              height={320}
-              priority
-              className="loading-illustration"
-            />
-          </div>
-
           <h2 className="loading-title">
             Loading<span className="dots">...</span>
           </h2>
@@ -65,77 +65,85 @@ export default function Home() {
           </div>
           <p className="progress-text">{Math.round(progress)}%</p>
         </div>
+      </div> */}
+
+      {/* Textes latéraux pendant le loading */}
+      <div className={`side-text left-text ${loadingComplete ? 'falling' : ''}`}>
+        Designed by M A N A L
+      </div>
+      <div className={`side-text right-text ${loadingComplete ? 'falling' : ''}`}>
+        From Morocco with Love
       </div>
 
-      {/* Main Hero */}
-      <div className={`hero-container ${showHero ? 'visible' : ''}`}>
-        <div className="hero-background">
-          <Image 
-            src="/back.jpg" 
-            alt="Background"
-            fill
-            style={{ objectFit: 'cover' }}
-            quality={100}
-            priority
-          />
-          <div className="hero-overlay"></div>
-        </div>
+      {/* Texte fusionné au centre */}
+      <div className={`merged-text ${loadingComplete ? 'visible' : ''}`}>
+        Designed by Manal, from Morocco with love
+      </div>
 
-        <div className="hero-content">
-          <div className="hero-illustration">
-            <div className="spotlight"></div>
-            <Image 
-              src="/im2.png"
-              alt="Hero"
-              width={320}
-              height={300}
-              className="float-illustration"
-            />
+      {/* Titre descendant avec la nouvelle police */}
+      <div className={`falling-title ${loadingComplete ? 'visible' : ''}`}>
+        <span className="title-hybrid">ZORO</span>
+        <span className="title-analyzer">Analyzer</span>
+      </div>
+
+      {/* Background Image */}
+      <div className={`background-container ${showBackground ? 'visible' : ''}`}>
+        <div className="background-image" />
+        <div className="background-overlay" />
+      </div>
+
+      {/* Menu Navigation */}
+      <nav className={`top-menu ${showMenu ? 'visible' : ''}`}>
+        {menuItems.map((item, index) => (
+          <div 
+            key={item.num}
+            className="menu-item"
+            onClick={() => handleMenuClick(index, item.path)}
+          >
+            <span className="menu-num">{item.num}</span>
+            <span className="menu-label">{item.label}</span>
+            <div className="menu-underline" />
+            {expandingIndex === index && (
+              <div className="expanding-overlay" />
+            )}
           </div>
+        ))}
+      </nav>
 
-          <h1 className="hero-title">
-            <span className="title-hybrid">Hybrid</span>
-            <span className="title-analyzer">Analyzer</span>
-          </h1>
-
-          <p className="hero-description">
-            Analyse avancée de texte par intelligence artificielle
-          </p>
-
-          <div className="cta-buttons">
-            <button 
-              className="btn-primary"
-              onClick={() => handleNavigate(isAuth ? '/analyse' : '/auth')}
-            >
-              {isAuth ? 'Commencer' : 'Se Connecter'}
-            </button>
+      {/* Navigation Loading */}
+      {navigating && (
+        <div className="navigation-loading">
+          <div className="nav-loader">
+            <div className="nav-loader-bar" />
           </div>
         </div>
+      )}
 
-        <nav className="bottom-nav">
-          <a onClick={() => handleNavigate('/')}>
-            <span className="nav-num">01</span>
-            <span>Home</span>
-          </a>
-          <a onClick={() => handleNavigate('/auth')}>
-            <span className="nav-num">02</span>
-            <span>Login</span>
-          </a>
-          <a onClick={() => handleNavigate(isAuth ? '/analyse' : '/auth')}>
-            <span className="nav-num">03</span>
-            <span>Analyze</span>
-          </a>
-          <a onClick={() => alert('Contact à venir')}>
-            <span className="nav-num">04</span>
-            <span>Contact</span>
-          </a>
-        </nav>
-
-        <div className="corner-text top-left">Open for collaborations</div>
-        <div className="corner-text bottom-right">From Morocco with passion</div>
+      {/* Corner Texts */}
+      <div className={`corner-text top-left ${showBackground ? 'visible' : ''}`}>
+        Open for collaborations
+      </div>
+      <div className={`corner-text bottom-right ${showBackground ? 'visible' : ''}`}>
+        From Morocco with passion
       </div>
 
       <style jsx>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        /* Import de la police personnalisée */
+        @font-face {
+          font-family: 'Moot Jungle';
+          src: url('/fonts/Rallomy-Regular.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+
+        /* Loading Screen */
         .loading-screen {
           position: fixed;
           inset: 0;
@@ -144,50 +152,15 @@ export default function Home() {
           align-items: center;
           justify-content: center;
           z-index: 100;
-          transition: opacity 0.8s ease, visibility 0.8s ease;
+          transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .loading-screen.hidden {
-          opacity: 0;
-          visibility: hidden;
-          pointer-events: none;
+        .loading-screen.falling {
+          transform: translateY(100vh);
         }
 
         .loading-content {
           text-align: center;
-        }
-
-        .illustration-wrapper {
-          position: relative;
-          margin-bottom: 3rem;
-        }
-
-        .light-beam {
-          position: absolute;
-          top: -100px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 2px;
-          height: 180px;
-          background: linear-gradient(180deg, transparent, rgba(0,0,0,0.15), transparent);
-          animation: lightPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes lightPulse {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 1; }
-        }
-
-        .loading-illustration {
-          position: relative;
-          z-index: 1;
-          animation: gentleBounce 3s ease-in-out infinite;
-          filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1));
-        }
-
-        @keyframes gentleBounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-20px); }
         }
 
         .loading-title {
@@ -201,11 +174,6 @@ export default function Home() {
 
         .dots {
           animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.2; }
         }
 
         .progress-bar {
@@ -229,169 +197,255 @@ export default function Home() {
           letter-spacing: 1px;
         }
 
-        .hero-container {
+        /* Textes latéraux */
+        .side-text {
           position: fixed;
-          inset: 0;
-          opacity: 0;
-          transition: opacity 1.2s ease;
-          pointer-events: none;
-        }
-
-        .hero-container.visible {
-          opacity: 1;
-          pointer-events: auto;
-        }
-
-        .hero-background {
-          position: absolute;
-          inset: 0;
-          z-index: 0;
-        }
-
-        .hero-overlay {
-          position: absolute;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.4);
-        }
-
-        .hero-content {
-          position: relative;
-          z-index: 10;
-          height: 100vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          padding: 2rem;
-        }
-
-        .hero-illustration {
-          margin-bottom: 3rem;
-          position: relative;
-        }
-
-        .spotlight {
-          position: absolute;
-          top: -150px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 4px;
-          height: 200px;
-          background: linear-gradient(180deg, transparent, rgba(255,255,255,0.8), transparent);
-          animation: spotlightPulse 4s ease-in-out infinite;
-          filter: blur(2px);
-        }
-
-        @keyframes spotlightPulse {
-          0%, 100% { opacity: 0.6; transform: translateX(-50%) scaleY(1); }
-          50% { opacity: 1; transform: translateX(-50%) scaleY(1.1); }
-        }
-
-        .float-illustration {
-          animation: floatGentle 6s ease-in-out infinite;
-          filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.5));
-        }
-
-        @keyframes floatGentle {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-25px); }
-        }
-
-        .hero-title {
-          font-family: 'EB Garamond', serif;
-          font-size: 7rem;
-          font-weight: 300;
-          line-height: 1;
-          margin-bottom: 1.5rem;
-          letter-spacing: -3px;
-          animation: fadeInUp 1s ease 0.5s backwards;
-        }
-
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .title-hybrid {
-          color: white;
-          font-style: italic;
-          display: block;
-        }
-
-        .title-analyzer {
-          color: white;
-          display: block;
-          margin-top: -0.5rem;
-        }
-
-        .hero-description {
-          font-size: 1rem;
-          color: rgba(255, 255, 255, 0.9);
-          max-width: 500px;
-          margin-bottom: 3rem;
-          font-weight: 300;
-          letter-spacing: 1px;
-          animation: fadeInUp 1s ease 0.8s backwards;
-        }
-
-        .cta-buttons {
-          animation: fadeInUp 1s ease 1.1s backwards;
-        }
-
-        .btn-primary {
-          padding: 16px 48px;
-          border: 1px solid white;
-          background: transparent;
-          color: white;
-          font-size: 0.9rem;
-          font-weight: 400;
-          letter-spacing: 2px;
-          cursor: pointer;
-          transition: all 0.4s ease;
-          text-transform: uppercase;
-        }
-
-        .btn-primary:hover {
-          background: white;
+          font-size: 0.75rem;
           color: #1a1a1a;
-          transform: translateY(-2px);
+          font-weight: 300;
+          letter-spacing: 2px;
+          z-index: 99;
+          text-transform: uppercase;
+          top: 50%;
+          transform: translateY(-50%);
+          opacity: 1;
+          transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .bottom-nav {
+        .left-text {
+          left: 2rem;
+          writing-mode: vertical-rl;
+          text-orientation: mixed;
+        }
+
+        .right-text {
+          right: 2rem;
+          writing-mode: vertical-rl;
+          text-orientation: mixed;
+        }
+
+        .side-text.falling {
+          opacity: 0;
+          transform: translateY(100vh);
+        }
+
+        /* Texte fusionné */
+        .merged-text {
           position: fixed;
           bottom: 3rem;
           left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          gap: 4rem;
-          z-index: 20;
-          animation: fadeInUp 1s ease 1.5s backwards;
+          transform: translateX(-50%) translateY(100vh);
+          font-size: 0.7rem;
+          color: #1a1a1a;
+          font-weight: 300;
+          letter-spacing: 2px;
+          z-index: 98;
+          text-transform: uppercase;
+          white-space: nowrap;
+          opacity: 0;
+          transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s;
         }
 
-        .bottom-nav a {
-          color: rgba(255, 255, 255, 0.7);
-          font-size: 0.75rem;
-          cursor: pointer;
-          transition: all 0.3s;
+        .merged-text.visible {
+          transform: translateX(-50%) translateY(0);
+          opacity: 1;
+        }
+
+        /* Titre descendant avec la police Moot Jungle */
+        .falling-title {
+          position: fixed;
+          top: 20%;
+          left: 50%;
+          transform: translateX(-50%) translateY(-150%);
+          z-index: 97;
+          text-align: center;
+          opacity: 0;
+          transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s;
+        }
+
+        .falling-title.visible {
+          transform: translateX(-50%) translateY(0);
+          opacity: 1;
+        }
+
+        .falling-title .title-hybrid,
+        .falling-title .title-analyzer {
+          font-family: 'Moot Jungle', 'EB Garamond', serif;
+          font-size: 6rem;
+          font-weight: normal;
+          line-height: 1.1;
+          letter-spacing: -2px;
+          color: #1a1a1a;
+          display: block;
+        }
+
+        .falling-title .title-hybrid {
+          font-style: italic;
+        }
+
+        .falling-title .title-analyzer {
+          margin-top: -0.5rem;
+        }
+
+        /* Background Container */
+        .background-container {
+          position: fixed;
+          inset: 0;
+          z-index: 1;
+          opacity: 0;
+          transform: scale(1.05);
+          filter: blur(10px);
+          transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .background-container.visible {
+          opacity: 1;
+          transform: scale(1);
+          filter: blur(0);
+        }
+
+        .background-image {
+          position: absolute;
+          inset: 0;
+          background-image: url('/back.jpg');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+
+        .background-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Top Menu */
+        .top-menu {
+          position: fixed;
+          top: 3rem;
+          left: 50%;
+          transform: translateX(-50%) translateY(-50px);
+          display: flex;
+          gap: 4rem;
+          z-index: 50;
+          opacity: 0;
+          transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .top-menu.visible {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+
+        .menu-item {
+          position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 4px;
-          letter-spacing: 1px;
-          text-transform: uppercase;
+          cursor: pointer;
+          padding: 0.5rem 1rem;
         }
 
-        .bottom-nav a:hover {
-          color: white;
-          transform: translateY(-3px);
-        }
-
-        .nav-num {
+        .menu-num {
           font-size: 0.6rem;
-          opacity: 0.5;
+          color: rgba(255, 255, 255, 0.5);
+          font-weight: 300;
+          letter-spacing: 1px;
         }
 
+        .menu-label {
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.85);
+          font-weight: 400;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          transition: color 0.3s ease;
+        }
+
+        .menu-item:hover .menu-label {
+          color: white;
+        }
+
+        .menu-underline {
+          position: absolute;
+          bottom: -4px;
+          left: 50%;
+          transform: translateX(-50%) scaleX(0);
+          width: 80%;
+          height: 1px;
+          background: white;
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .menu-item:hover .menu-underline {
+          transform: translateX(-50%) scaleX(1);
+        }
+
+        /* Expanding Overlay */
+        .expanding-overlay {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 1px;
+          height: 1px;
+          background: white;
+          z-index: 90;
+          animation: expandOverlay 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes expandOverlay {
+          0% {
+            width: 1px;
+            height: 1px;
+            border-radius: 50%;
+          }
+          50% {
+            width: 100vw;
+            height: 2px;
+            border-radius: 0;
+          }
+          100% {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+          }
+        }
+
+        /* Navigation Loading */
+        .navigation-loading {
+          position: fixed;
+          inset: 0;
+          z-index: 95;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: white;
+          animation: fadeIn 0.3s ease;
+        }
+
+        .nav-loader {
+          width: 300px;
+          height: 2px;
+          background: #f0f0f0;
+          overflow: hidden;
+          border-radius: 2px;
+        }
+
+        .nav-loader-bar {
+          width: 0;
+          height: 100%;
+          background: #1a1a1a;
+          animation: loadBar 1.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes loadBar {
+          0% { width: 0; }
+          100% { width: 100%; }
+        }
+
+        /* Corner Texts */
         .corner-text {
           position: fixed;
           font-size: 0.65rem;
@@ -400,18 +454,28 @@ export default function Home() {
           letter-spacing: 1px;
           z-index: 15;
           text-transform: uppercase;
+          opacity: 0;
+          transition: opacity 1s ease 0.5s;
+        }
+
+        .corner-text.visible {
+          opacity: 1;
         }
 
         .top-left {
           top: 2rem;
           left: 2rem;
-          animation: fadeIn 1s ease 1.8s backwards;
         }
 
         .bottom-right {
           bottom: 2rem;
           right: 2rem;
-          animation: fadeIn 1s ease 2s backwards;
+        }
+
+        /* Animations */
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.2; }
         }
 
         @keyframes fadeIn {
@@ -419,17 +483,44 @@ export default function Home() {
           to { opacity: 1; }
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
-          .hero-title {
+          .falling-title .title-hybrid,
+          .falling-title .title-analyzer {
             font-size: 4rem;
           }
 
-          .bottom-nav {
+          .top-menu {
             gap: 2rem;
+            top: 2rem;
+          }
+
+          .menu-item {
+            padding: 0.5rem 0.5rem;
+          }
+
+          .menu-label {
+            font-size: 0.65rem;
           }
 
           .corner-text {
             font-size: 0.55rem;
+          }
+
+          .side-text {
+            font-size: 0.65rem;
+          }
+
+          .merged-text {
+            font-size: 0.6rem;
+          }
+
+          .left-text {
+            left: 1rem;
+          }
+
+          .right-text {
+            right: 1rem;
           }
         }
       `}</style>

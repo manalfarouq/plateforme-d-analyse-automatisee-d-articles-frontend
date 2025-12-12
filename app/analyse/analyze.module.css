@@ -1,0 +1,239 @@
+/* app/analyse/analyze.module.css */
+
+.analyzeContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #333;
+  padding-bottom: 15px;
+}
+
+.headerInfo h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.headerInfo p {
+  margin: 5px 0 0 0;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.logoutButton {
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid #dc2626;
+  background: #dc2626;
+  color: white;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.logoutButton:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+/* Section formulaire */
+.formSection {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  border: 1px solid #e5e7eb;
+}
+
+.formSection h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #1a1a1a;
+}
+
+.analyzeForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  margin-bottom: 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.textarea:focus {
+  border-color: #4f46e5;
+  outline: none;
+}
+
+.submitButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  background: #4f46e5;
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.submitButton:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Messages */
+.errorMessage {
+  color: #dc2626;
+  margin-top: 15px;
+  padding: 12px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideDown 0.3s ease;
+}
+
+.resultBox {
+  margin-top: 25px;
+  padding: 20px;
+  border: 1px solid #a7f3d0;
+  background: #ecfdf5;
+  border-radius: 4px;
+  animation: slideDown 0.3s ease;
+}
+
+.resultBox h3 {
+  margin-top: 0;
+  color: #065f46;
+  font-size: 1.25rem;
+}
+
+.resultItem {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.resultItem strong {
+  color: #065f46;
+  font-weight: 600;
+}
+
+/* Section historique */
+.historySection {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.historySection h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #1a1a1a;
+}
+
+.emptyHistory {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.historyItem {
+  padding: 15px;
+  border: 1px solid #d1d5db;
+  background: white;
+  margin-bottom: 12px;
+  border-radius: 4px;
+  transition: box-shadow 0.2s ease;
+}
+
+.historyItem:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.historyDate {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.historyText {
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.historyText strong {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.sentimentBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.sentimentPositive {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.sentimentNegative {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sentimentNeutral {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .analyzeContainer {
+    padding: 15px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .headerInfo h1 {
+    font-size: 1.5rem;
+  }
+
+  .formSection,
+  .historySection {
+    padding: 15px;
+  }
+
+  .textarea {
+    font-size: 16px; /* Évite le zoom sur iOS */
+  }
+}

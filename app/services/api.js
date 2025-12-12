@@ -84,15 +84,15 @@ export const analyseService = {
     }
 
     try {
-      // ✅ Utiliser le bon endpoint : /AnalyzeComplet
+      // Utiliser le bon endpoint : /AnalyzeComplet
       const response = await fetch(`${ANALYSE_API_URL}/AnalyzeComplet`, {
         method: 'POST',
         headers: {
           'accept': 'application/json',
-          'token': token, // ✅ Envoyer le token dans le header
+          'token': token, // Envoyer le token dans le header
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: text }), // ✅ Changé de "texte" à "text"
+        body: JSON.stringify({ text: text }), // Changé de "texte" à "text"
       });
 
       if (!response.ok) {

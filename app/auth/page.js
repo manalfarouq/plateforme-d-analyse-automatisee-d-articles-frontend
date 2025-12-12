@@ -1,21 +1,27 @@
-// app/auth/page.js
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '../services/api';
+import styles from './auth.module.css';
 
 export default function AuthPage() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loadingComplete, setLoadingComplete] = useState(false);
   
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: ''
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoadingComplete(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -32,28 +38,14 @@ export default function AuthPage() {
 
     try {
       if (isLogin) {
-        // Connexion
-        const response = await authService.signin(
-          formData.username,
-          formData.password
-        );
-        console.log('✅ Connexion réussie:', response);
+        await authService.signin(formData.username, formData.password);
         router.push('/analyse');
       } else {
-        // Inscription
-        await authService.signup(
-          formData.username,
-          formData.email,
-          formData.password
-        );
-        console.log('Inscription réussie');
-        
-        // Connexion automatique après inscription
+        await authService.signup(formData.username, formData.email, formData.password);
         await authService.signin(formData.username, formData.password);
         router.push('/analyse');
       }
     } catch (err) {
-      console.error('Erreur:', err);
       setError(err.message || 'Une erreur est survenue');
     } finally {
       setLoading(false);
@@ -61,168 +53,91 @@ export default function AuthPage() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#f9fafb',
-      padding: '1rem'
-    }}>
-      <div style={{
-        maxWidth: '400px',
-        width: '100%',
-        backgroundColor: 'white',
-        padding: '2rem',
-        borderRadius: '8px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        border: '1px solid #e5e7eb'
-      }}>
-        <h1 style={{
-          fontSize: '1.875rem',
-          fontWeight: 'bold',
-          textAlign: 'center',
-          marginBottom: '0.5rem',
-          color: '#111827'
-        }}>
-          Plateforme d&apos;Analyse
-        </h1>
-        
-        <h2 style={{
-          fontSize: '1.25rem',
-          fontWeight: '600',
-          textAlign: 'center',
-          marginBottom: '2rem',
-          color: '#4f46e5'
-        }}>
-          {isLogin ? 'Connexion' : 'Inscription'}
-        </h2>
-        
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              color: '#374151',
-              marginBottom: '0.5rem'
-            }}>
-              Nom d&apos;utilisateur
-            </label>
+    <div className={styles.authContainer}>
+      {/* Background */}
+      <div className={`${styles.backgroundContainer} ${loadingComplete ? styles.visible : ''}`}>
+        <div className={styles.backgroundImage}></div>
+      </div>
+
+      {/* Card */}
+      <div className={styles.authCard}>
+        <div className={styles.cardHeader}>
+          <h2 className={styles.cardTitle}>
+            {isLogin ? 'Connexion' : 'Inscription'}
+          </h2>
+          <p className={styles.cardDescription}>
+            {isLogin ? "Accédez à votre espace d'analyse" : 'Créez votre compte pour commencer'}
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className={styles.authForm}>
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>Nom d&apos;utilisateur</label>
             <input
               name="username"
               type="text"
               required
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '0.875rem',
-                color: '#111827'
-              }}
+              className={styles.formInput}
               placeholder="Votre nom d'utilisateur"
               value={formData.username}
               onChange={handleChange}
             />
           </div>
-          
+
           {!isLogin && (
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
-                Email
-              </label>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Email</label>
               <input
                 name="email"
                 type="email"
                 required
-                style={{
-                  width: '100%',
-                  padding: '0.625rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  fontSize: '0.875rem',
-                  color: '#111827'
-                }}
+                className={styles.formInput}
                 placeholder="votre.email@example.com"
                 value={formData.email}
                 onChange={handleChange}
               />
             </div>
           )}
-          
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              color: '#374151',
-              marginBottom: '0.5rem'
-            }}>
-              Mot de passe
-            </label>
+
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>Mot de passe</label>
             <input
               name="password"
               type="password"
               required
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '0.875rem',
-                color: '#111827'
-              }}
-              placeholder="Votre mot de passe"
+              className={styles.formInput}
+              placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
             />
           </div>
 
           {error && (
-            <div style={{
-              padding: '0.75rem',
-              backgroundColor: '#fee2e2',
-              border: '1px solid #fecaca',
-              borderRadius: '4px',
-              marginBottom: '1rem'
-            }}>
-              <p style={{
-                fontSize: '0.875rem',
-                color: '#991b1b',
-                margin: 0
-              }}>
-                ⚠️ {error}
-              </p>
+            <div className={styles.errorMessage}>
+              <span className={styles.errorIcon}>⚠</span>
+              <span>{error}</span>
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '0.625rem',
-              backgroundColor: loading ? '#9ca3af' : '#4f46e5',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.2s'
-            }}
+          <button 
+            type="submit" 
+            disabled={loading} 
+            className={`${styles.submitButton} ${loading ? styles.loading : ''}`}
           >
-            {loading ? 'Chargement...' : (isLogin ? 'Se connecter' : 'S&apos;inscrire')}
+            {loading ? (
+              <>
+                <span className={styles.spinner} />
+                <span>Traitement...</span>
+              </>
+            ) : (
+              isLogin ? 'Se connecter' : "S'inscrire"
+            )}
           </button>
 
-          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+          <div className={styles.toggleSection}>
+            <span className={styles.toggleText}>
+              {isLogin ? 'Pas encore de compte ?' : 'Déjà inscrit ?'}
+            </span>
             <button
               type="button"
               onClick={() => {
@@ -230,20 +145,17 @@ export default function AuthPage() {
                 setError('');
                 setFormData({ username: '', email: '', password: '' });
               }}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#4f46e5',
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-                textDecoration: 'underline'
-              }}
+              className={styles.toggleButton}
             >
-              {isLogin ? 'Pas de compte ? S&apos;inscrire' : 'Déjà un compte ? Se connecter'}
+              {isLogin ? 'Créer un compte' : 'Se connecter'}
             </button>
           </div>
         </form>
       </div>
+
+      <p className={styles.authFooter}>
+        Designed by Manal, from Morocco with love
+      </p>
     </div>
   );
 }
