@@ -1,0 +1,350 @@
+/* app/analyse/analyze.module.css */
+
+.analyzeContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 60px;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Header élégant */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 60px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.headerInfo h1 {
+  margin: 0;
+  font-family: 'EB Garamond', serif;
+  font-size: 3rem;
+  font-weight: 400;
+  color: #1a1a1a;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+
+.headerInfo p {
+  margin: 12px 0 0 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.logoutButton {
+  padding: 10px 24px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  background: transparent;
+  color: #dc2626;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 400;
+}
+
+.logoutButton:hover {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}
+
+/* Section formulaire - style minimaliste */
+.formSection {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 80px;
+  border: none;
+}
+
+.formSection h2 {
+  margin: 0 0 30px 0;
+  font-family: 'EB Garamond', serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+.analyzeForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 20px;
+  font-size: 15px;
+  line-height: 1.8;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  resize: vertical;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.5);
+  color: #1a1a1a;
+  min-height: 180px;
+}
+
+.textarea::placeholder {
+  color: #9ca3af;
+  font-weight: 300;
+}
+
+.textarea:focus {
+  border-color: #1a1a1a;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.submitButton {
+  padding: 14px 40px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border: 1px solid #1a1a1a;
+  background: #1a1a1a;
+  color: white;
+  border-radius: 2px;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: transparent;
+  color: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.submitButton:disabled {
+  background: #e5e7eb;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Messages d'erreur élégants */
+.errorMessage {
+  color: #dc2626;
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: rgba(220, 38, 38, 0.05);
+  border-left: 3px solid #dc2626;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.resultBox {
+  margin-top: 40px;
+  padding: 30px;
+  border-left: 3px solid #10b981;
+  background: rgba(16, 185, 129, 0.03);
+  border-radius: 2px;
+  animation: slideIn 0.4s ease;
+}
+
+.resultBox h3 {
+  margin: 0 0 24px 0;
+  color: #065f46;
+  font-family: 'EB Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+}
+
+.resultItem {
+  margin-bottom: 16px;
+  line-height: 1.8;
+  font-size: 0.9375rem;
+  color: #374151;
+}
+
+.resultItem strong {
+  color: #065f46;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* Section historique */
+.historySection {
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+.historySection h2 {
+  margin: 0 0 40px 0;
+  font-family: 'EB Garamond', serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+.emptyHistory {
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 0.9375rem;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.historyItem {
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: transparent;
+  margin-bottom: 0;
+  transition: all 0.3s ease;
+}
+
+.historyItem:hover {
+  padding-left: 20px;
+  border-left: 2px solid #1a1a1a;
+}
+
+.historyItem:last-child {
+  border-bottom: none;
+}
+
+.historyDate {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 400;
+}
+
+.historyText {
+  margin-bottom: 10px;
+  color: #4b5563;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.historyText strong {
+  color: #1a1a1a;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  margin-right: 6px;
+}
+
+.sentimentBadge {
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 0.6875rem;
+  border-radius: 2px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 8px;
+}
+
+.sentimentPositive {
+  background: rgba(16, 185, 129, 0.1);
+  color: #065f46;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.sentimentNegative {
+  background: rgba(220, 38, 38, 0.1);
+  color: #991b1b;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.sentimentNeutral {
+  background: rgba(107, 114, 128, 0.1);
+  color: #374151;
+  border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .analyzeContainer {
+    padding: 30px 40px;
+  }
+
+  .headerInfo h1 {
+    font-size: 2.5rem;
+  }
+
+  .formSection h2,
+  .historySection h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .analyzeContainer {
+    padding: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .headerInfo h1 {
+    font-size: 2rem;
+  }
+
+  .logoutButton {
+    align-self: flex-start;
+  }
+
+  .formSection,
+  .historySection {
+    margin-bottom: 50px;
+  }
+
+  .textarea {
+    font-size: 16px; /* Évite le zoom sur iOS */
+  }
+
+  .submitButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .historyItem:hover {
+    padding-left: 15px;
+  }
+}
