@@ -1,12 +1,13 @@
 # ZORO Analyzer – Frontend (Next.js)
 
-Interface web du projet **Hybrid Analyzer**, une plateforme permettant d'analyser automatiquement des articles via deux services d'IA :
+Interface web du projet **ZORO Analyzer**, une plateforme permettant d'analyser automatiquement des articles via deux services d'IA :
 
 - **Hugging Face Zero-Shot Classification**
 - **Google Gemini – Résumé + Tonality + Synthèse contextuelle**
 
 Ce frontend communique avec un backend Python sécurisé via **JWT**.
 
+**Backend associé :** [Plateforme de ZORO Analyzer - Backend]([https://github.com/manalfarouq/Plateforme-de-Traduction-Securisee-Backend.git](https://github.com/manalfarouq/Plateforme-d-analyse-automatisee-d-articles-backend.git))
 ---
 
 ## Fonctionnalités principales du Frontend
