@@ -21,12 +21,16 @@ function AnalyzeContent() {
       : 'Utilisateur';
     setUsername(user);
     loadHistory();
+    
+    // Debug: vérifier que le composant se monte
+    console.log('AnalyzeContent mounted');
   }, []);
 
   const loadHistory = async () => {
     try {
       const data = await analyseService.getHistory();
       setHistory(Array.isArray(data) ? data : (data.historique || []));
+      console.log('History loaded:', data);
     } catch (err) {
       console.error('Erreur historique:', err);
     }

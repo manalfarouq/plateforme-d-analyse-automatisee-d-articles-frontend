@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const [progress, setProgress] = useState(0);
   const [loadingComplete, setLoadingComplete] = useState(false);
   const [showBackground, setShowBackground] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -15,21 +14,16 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          // Séquence d'animations
-          setTimeout(() => setLoadingComplete(true), 300);
-          setTimeout(() => setShowBackground(true), 1800);
-          setTimeout(() => setShowMenu(true), 2500);
-          return 100;
-        }
-        return prev + 2;
-      });
-    }, 40);
+    // Séquence d'animations directe
+    const timer1 = setTimeout(() => setLoadingComplete(true), 300);
+    const timer2 = setTimeout(() => setShowBackground(true), 1800);
+    const timer3 = setTimeout(() => setShowMenu(true), 2500);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
   }, []);
 
   const handleMenuClick = (index: number, path?: string) => {
@@ -38,11 +32,11 @@ export default function Home() {
 
     // Navigation après l'animation complète
     setTimeout(() => {
-    if (path) {
-      router.push(path); // navigue vers /auth ou autre
-    }
-  }, 1200); // délai correspondant à ton animation
-};
+      if (path) {
+        router.push(path);
+      }
+    }, 1200);
+  };
 
   const menuItems = [
     { num: '01', label: 'HOME', path: '/' },
@@ -53,20 +47,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Loading Screen */}
-      {/* <div className={`loading-screen ${loadingComplete ? 'falling' : ''}`}>
-        <div className="loading-content">
-          <h2 className="loading-title">
-            Loading<span className="dots">...</span>
-          </h2>
-
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${progress}%` }} />
-          </div>
-          <p className="progress-text">{Math.round(progress)}%</p>
-        </div>
-      </div> */}
-
       {/* Textes latéraux pendant le loading */}
       <div className={`side-text left-text ${loadingComplete ? 'falling' : ''}`}>
         Designed by M A N A L
@@ -141,60 +121,6 @@ export default function Home() {
           font-weight: normal;
           font-style: normal;
           font-display: swap;
-        }
-
-        /* Loading Screen */
-        .loading-screen {
-          position: fixed;
-          inset: 0;
-          background: #fafafa;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 100;
-          transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .loading-screen.falling {
-          transform: translateY(100vh);
-        }
-
-        .loading-content {
-          text-align: center;
-        }
-
-        .loading-title {
-          font-family: 'EB Garamond', serif;
-          font-size: 3rem;
-          font-weight: 400;
-          color: #1a1a1a;
-          margin-bottom: 1rem;
-          letter-spacing: 2px;
-        }
-
-        .dots {
-          animation: blink 1.5s infinite;
-        }
-
-        .progress-bar {
-          width: 300px;
-          height: 1px;
-          background: #e0e0e0;
-          margin: 0 auto 0.5rem;
-          overflow: hidden;
-        }
-
-        .progress-fill {
-          height: 100%;
-          background: #1a1a1a;
-          transition: width 0.3s ease;
-        }
-
-        .progress-text {
-          font-size: 0.75rem;
-          color: #999;
-          font-family: monospace;
-          letter-spacing: 1px;
         }
 
         /* Textes latéraux */
@@ -473,11 +399,6 @@ export default function Home() {
         }
 
         /* Animations */
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.2; }
-        }
-
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
