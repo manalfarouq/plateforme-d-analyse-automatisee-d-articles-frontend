@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   frontend:
     build: . 
-    container_name: traduction_frontend
+    container_name: analyse_frontend
     ports:
       - "3000:3000"
     environment:
