@@ -1,50 +1,45 @@
-// components/Header.tsx
 'use client';
 
-import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-
-interface MenuItem {
-  num: string;
-  label: string;
-  path: string;
-}
+import { useAnimation } from './providers/AnimationProvider';
+import { useEffect } from 'react';
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const [expandingIndex, setExpandingIndex] = useState<number | null>(null);
-  const [navigating, setNavigating] = useState(false);
+  const { expandingIndex, startNavigation, endNavigation } = useAnimation();
 
-  const handleMenuClick = (index: number, path: string) => {
+  // Nettoyer l'animation après la navigation
+  useEffect(() => {
+    if (expandingIndex !== null) {
+      const timer = setTimeout(() => {
+        endNavigation();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [expandingIndex, endNavigation]);
+
+  // Ne pas afficher sur la homepage
+  if (pathname === '/') return null;
+
+  const handleMenuClick = (index, path) => {
     if (path === pathname) return;
-    
-    setExpandingIndex(index);
-    
-    setTimeout(() => {
-      setNavigating(true);
-    }, 300);
-
-    setTimeout(() => {
-      router.push(path);
-      setExpandingIndex(null);
-      setNavigating(false);
-    }, 1200);
+    startNavigation(index);
+    setTimeout(() => router.push(path), 800);
   };
 
-  const menuItems: MenuItem[] = [
+  const menuItems = [
     { num: '01', label: 'HOME', path: '/' },
     { num: '02', label: 'LOGIN', path: '/auth' },
     { num: '03', label: 'ANALYZE', path: '/analyse' },
     { num: '04', label: 'CONTACT', path: '/contact' },
   ];
 
-  // Ne pas afficher le background sur la page /analyse
   const showBackground = pathname !== '/analyse';
 
   return (
     <>
-      {/* Background fixe - SEULEMENT sur certaines pages */}
+      {/* Background */}
       {showBackground && (
         <div className="header-background">
           <div className="background-image" />
@@ -52,51 +47,33 @@ export default function Header() {
         </div>
       )}
 
-      {/* Menu navigation */}
+      {/* Menu Navigation */}
       <nav className="header-menu">
         {menuItems.map((item, index) => (
           <button
             key={item.num}
             className={`menu-item ${pathname === item.path ? 'active' : ''}`}
             onClick={() => handleMenuClick(index, item.path)}
-            aria-label={item.label}
+            disabled={pathname === item.path}
           >
             <span className="menu-num">{item.num}</span>
             <span className="menu-label">{item.label}</span>
-            <div className="menu-underline" />
-            {expandingIndex === index && <div className="expanding-overlay" />}
+            <div className="menu-background" />
           </button>
         ))}
       </nav>
 
-      {/* Texte footer */}
-      <div className="header-footer">
-        Designed by Manal, from Morocco with love
-      </div>
-
-      {/* Textes dans les coins - uniquement si background visible */}
-      {showBackground && (
-        <>
-          <div className="corner-text top-left">
-            Open for collaborations
-          </div>
-          <div className="corner-text bottom-right">
-            From Morocco with passion
-          </div>
-        </>
-      )}
-
-      {/* Navigation loading overlay */}
-      {navigating && (
-        <div className="navigation-overlay">
-          <div className="nav-loader">
-            <div className="nav-loader-bar" />
-          </div>
+      {/* Expanding Overlay (en dehors du menu) */}
+      {expandingIndex !== null && (
+        <div className="expanding-overlay-container">
+          <div className="expanding-overlay" />
         </div>
       )}
 
       <style jsx>{`
-        /* Background */
+        /* ============================================
+           BACKGROUND
+           ============================================ */
         .header-background {
           position: fixed;
           inset: 0;
@@ -118,7 +95,9 @@ export default function Header() {
           background: rgba(0, 0, 0, 0.3);
         }
 
-        /* Menu */
+        /* ============================================
+           MENU NAVIGATION
+           ============================================ */
         .header-menu {
           position: fixed;
           top: 3rem;
@@ -126,17 +105,13 @@ export default function Header() {
           transform: translateX(-50%);
           display: flex;
           gap: 3rem;
-          z-index: 20000;
+          z-index: 100;
           animation: fadeIn 0.6s ease forwards;
         }
 
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         .menu-item {
@@ -145,19 +120,15 @@ export default function Header() {
           flex-direction: column;
           align-items: center;
           gap: 4px;
-          padding: 0.5rem 1rem;
+          padding: 0.75rem 1.25rem;
           background: transparent;
           border: none;
           cursor: pointer;
-          color: rgba(255, 255, 255, 0.85);
+          z-index: 1;
         }
 
-        .menu-item.active .menu-label {
-          color: white;
-        }
-
-        .menu-item.active .menu-underline {
-          transform: translateX(-50%) scaleX(1);
+        .menu-item:disabled {
+          cursor: default;
         }
 
         .menu-num {
@@ -165,6 +136,9 @@ export default function Header() {
           color: rgba(255, 255, 255, 0.5);
           font-weight: 300;
           letter-spacing: 1px;
+          position: relative;
+          z-index: 2;
+          transition: color 0.3s ease;
         }
 
         .menu-label {
@@ -172,29 +146,87 @@ export default function Header() {
           font-weight: 400;
           letter-spacing: 2px;
           text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.85);
+          position: relative;
+          z-index: 2;
           transition: color 0.3s ease;
         }
 
-        .menu-item:hover .menu-label {
+        /* Background blanc au hover */
+        .menu-background {
+          position: absolute;
+          inset: 0;
+          background: white;
+          border-radius: 4px;
+          transform: scale(0);
+          opacity: 0;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 0;
+        }
+
+        .menu-item:hover:not(:disabled) .menu-background {
+          transform: scale(1);
+          opacity: 1;
+        }
+
+        .menu-item:hover:not(:disabled) .menu-num,
+        .menu-item:hover:not(:disabled) .menu-label {
+          color: #1a1a1a;
+        }
+
+        /* État actif */
+        .menu-item.active .menu-background {
+          transform: scale(1);
+          opacity: 0.2;
+        }
+
+        .menu-item.active .menu-label {
           color: white;
         }
 
-        .menu-underline {
+        /* ============================================
+           EXPANDING OVERLAY (séparé du menu)
+           ============================================ */
+        .expanding-overlay-container {
+          position: fixed;
+          inset: 0;
+          z-index: 9998;
+          pointer-events: none;
+        }
+
+        .expanding-overlay {
           position: absolute;
-          bottom: -4px;
+          top: 50%;
           left: 50%;
-          transform: translateX(-50%) scaleX(0);
-          width: 80%;
-          height: 1px;
+          transform: translate(-50%, -50%);
+          width: 10px;
+          height: 10px;
           background: white;
-          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          border-radius: 50%;
+          animation: expandFull 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        .menu-item:hover .menu-underline {
-          transform: translateX(-50%) scaleX(1);
+        @keyframes expandFull {
+          0% {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+          }
+          50% {
+            width: 100vw;
+            height: 10px;
+            border-radius: 0;
+          }
+          100% {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+          }
         }
 
-        /* Footer text */
+        /* ============================================
+           FOOTER TEXT
+           ============================================ */
         .header-footer {
           position: fixed;
           bottom: 3rem;
@@ -204,12 +236,14 @@ export default function Header() {
           color: rgba(255, 255, 255, 0.9);
           font-weight: 300;
           letter-spacing: 2px;
-          z-index: 98;
+          z-index: 50;
           text-transform: uppercase;
           text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        /* Corner texts */
+        /* ============================================
+           CORNER TEXTS
+           ============================================ */
         .corner-text {
           position: fixed;
           font-size: 0.65rem;
@@ -231,63 +265,9 @@ export default function Header() {
           right: 2rem;
         }
 
-        /* Expanding overlay animation */
-        .expanding-overlay {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 1px;
-          height: 1px;
-          background: white;
-          z-index: 9990;
-          animation: expand 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes expand {
-          0% {
-            width: 1px;
-            height: 1px;
-            border-radius: 50%;
-          }
-          100% {
-            width: 100vw;
-            height: 100vh;
-            border-radius: 0;
-          }
-        }
-
-        /* Navigation overlay */
-        .navigation-overlay {
-          position: fixed;
-          inset: 0;
-          z-index: 9995;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: white;
-        }
-
-        .nav-loader {
-          width: 300px;
-          height: 2px;
-          background: #f0f0f0;
-          overflow: hidden;
-          border-radius: 2px;
-        }
-
-        .nav-loader-bar {
-          width: 0;
-          height: 100%;
-          background: #1a1a1a;
-          animation: loadBar 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes loadBar {
-          to { width: 100%; }
-        }
-
-        /* Responsive */
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
         @media (max-width: 768px) {
           .header-menu {
             gap: 2rem;
@@ -295,7 +275,7 @@ export default function Header() {
           }
 
           .menu-item {
-            padding: 0.5rem 0.5rem;
+            padding: 0.5rem 0.75rem;
           }
 
           .menu-label {
