@@ -83,18 +83,28 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="contact-page">
-      <div className="contact-container">
-        {/* Header */}
-        <div className="contact-header">
-          <h1 className="contact-title">
-            <span className="title-line">Restons en</span>
-            <span className="title-line highlight">Contact</span>
-          </h1>
-          <p className="contact-subtitle">
-            N hésitez pas à me contacter pour toute collaboration ou question
-          </p>
+  <div className="contact-page">
+    <div className="contact-container">
+      {/* Header */}
+      <div className="contact-header">
+        <h1 className="contact-title">
+          <span className="title-line">Restons en</span>
+          <span className="title-line highlight">Contact</span>
+        </h1>
+
+        {/* Lien "En savoir plus" */}
+        <div className="about-link-section">
+          <button 
+            className="about-link"
+            onClick={() => setShowAbout(true)}
+          >
+            <span>En savoir plus sur la développeuse</span>
+            <ArrowRight size={16} strokeWidth={2} />
+          </button>
         </div>
+      </div>
+    </div>
+
 
         <div className="content-wrapper">
           {/* Contact Info Cards */}
@@ -214,19 +224,8 @@ export default function ContactPage() {
             </form>
           </div>
         </div>
-
-        {/* Lien "En savoir plus" */}
-        <div className="about-link-section">
-          <button 
-            className="about-link"
-            onClick={() => setShowAbout(true)}
-          >
-            <span>En savoir plus sur la développeuse</span>
-            <ArrowRight size={16} strokeWidth={2} />
-          </button>
-        </div>
-      </div>
-
+        
+            
       {/* About Overlay */}
       <AboutOverlay isOpen={showAbout} onClose={() => setShowAbout(false)} />
 
