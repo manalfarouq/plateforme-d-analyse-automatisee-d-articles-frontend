@@ -147,7 +147,7 @@ export default function AboutOverlay({ isOpen, onClose }) {
 
       setTimeout(() => {
         isScrollingRef.current = false;
-      }, 800);
+      }, 1200);
     }
   };
 
@@ -445,6 +445,21 @@ export default function AboutOverlay({ isOpen, onClose }) {
         );
         animation: scanline 3s linear infinite;
         }
+        .effect-cyber::before { /* Utilisez ::before pour le bruit */
+        content: '';
+        position: absolute;
+        inset: 0;
+        /* Utilisation d'un filtre ou d'une texture de bruit */
+        background-image: url("data:image/svg+xml,...noise..."); 
+        opacity: 0.1; /* Bruit subtil */
+        animation: glitch-anim 0.5s infinite alternate; /* Nouvelle animation */
+    }
+
+        @keyframes glitch-anim {
+            0% { clip-path: inset(1% 0 99% 0); }
+            50% { clip-path: inset(50% 0 50% 0); }
+            100% { clip-path: inset(99% 0 1% 0); }
+        }
 
         @keyframes scanline {
         0% { transform: translateY(-100%); }
@@ -492,6 +507,7 @@ export default function AboutOverlay({ isOpen, onClose }) {
           height: 180px;
           z-index: 50;
           pointer-events: none;
+          transition: transform 0.2s ease-out;
         }
 
         .floating-image {
@@ -649,7 +665,13 @@ export default function AboutOverlay({ isOpen, onClose }) {
         .project-card {
           position: absolute;
           inset: 0;
-          transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+          /* Augmenter la durée pour plus de fluidité, utiliser un easing plus dramatique */
+          transition: all 1.2s cubic-bezier(0.8, 0, 0.2, 1); 
+        }
+
+        /* Ajouter une légère rotation 3D pour un effet de carte qui "tourne" en entrant/sortant */
+        .project-card:not(.active) {
+            transform: translateY(30px) scale(0.95) rotateX(10deg);
         }
 
         .project-link {
@@ -703,6 +725,26 @@ export default function AboutOverlay({ isOpen, onClose }) {
           display: inline-block;
           margin-left: 2px;
           animation: blink 1s step-end infinite;
+          color: ${currentTheme.textColor};
+        }
+
+        /* Thème Cyber - Curseur plus vert */
+        .effect-cyber .cursor {
+          background-color: #00ff88;
+          width: 3px;
+          height: 1.2em;
+          display: inline-block;
+          transform: translateY(2px);
+          animation: blink 0.5s step-end infinite;
+        }
+
+        /* Thème Retro/XP - Curseur Bloc */
+        .effect-xp .cursor {
+          background-color: ${currentTheme.textColor}; 
+          width: 8px; /* Plus large pour l'effet bloc */
+          height: 1.2em;
+          display: inline-block;
+          animation: blink 0.8s step-end infinite;
         }
 
         @keyframes blink {
