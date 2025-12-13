@@ -1,18 +1,21 @@
-/* app/globals.css */
+/* app/services/globals.css */
 
-/* Import des polices */
+/* ============================================
+   FONTS IMPORT
+   ============================================ */
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
-/* Police personnalisée Moot Jungle */
 @font-face {
   font-family: 'Moot Jungle';
-  src: url('/fonts/Mootjunglefreeversion-Regular.ttf') format('truetype');
+  src: url('/fonts/Rallomy-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
-/* Reset et styles de base */
+/* ============================================
+   RESET
+   ============================================ */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -33,7 +36,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Typographie */
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'EB Garamond', serif;
   font-weight: 400;
@@ -46,7 +51,9 @@ a {
   transition: color 0.2s ease;
 }
 
-/* Éléments de formulaire */
+/* ============================================
+   FORM ELEMENTS
+   ============================================ */
 button {
   font-family: inherit;
   cursor: pointer;
@@ -62,14 +69,15 @@ button:disabled {
 
 input, textarea {
   font-family: inherit;
-  outline: none;
 }
 
 input:focus, textarea:focus {
   outline: none;
 }
 
-/* Scrollbar personnalisée */
+/* ============================================
+   SCROLLBAR
+   ============================================ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -89,18 +97,20 @@ input:focus, textarea:focus {
   background: #999;
 }
 
-/* Animations globales réutilisables */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
+/* ============================================
+   GLOBAL ANIMATIONS - À UTILISER VIA CLASSES
+   ============================================ */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes fadeInUp {
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideUp {
   from { 
     opacity: 0;
     transform: translateY(30px); 
@@ -114,7 +124,7 @@ input:focus, textarea:focus {
 @keyframes slideDown {
   from { 
     opacity: 0;
-    transform: translateY(-10px); 
+    transform: translateY(-30px); 
   }
   to { 
     opacity: 1;
@@ -127,7 +137,39 @@ input:focus, textarea:focus {
   50% { opacity: 0.5; }
 }
 
-/* Utilitaires */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Classes utilitaires pour animations */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.6s ease forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.6s ease forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
 .visually-hidden {
   position: absolute;
   width: 1px;
