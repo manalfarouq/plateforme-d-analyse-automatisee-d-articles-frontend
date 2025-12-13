@@ -2,12 +2,13 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useAnimation } from './providers/AnimationProvider';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { expandingIndex, startNavigation, endNavigation } = useAnimation();
+  const [expandOrigin, setExpandOrigin] = useState({ x: 0, y: 0 });
 
   // Nettoyer l'animation après la navigation
   useEffect(() => {
@@ -22,9 +23,17 @@ export default function Header() {
   // Ne pas afficher sur la homepage
   if (pathname === '/') return null;
 
-  const handleMenuClick = (index, path) => {
+  const handleMenuClick = (index, path, event) => {
     if (path === pathname) return;
+    
+    // Capturer la position du bouton cliqué
+    const rect = event.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    setExpandOrigin({ x: centerX, y: centerY });
     startNavigation(index);
+    
     setTimeout(() => router.push(path), 800);
   };
 
@@ -53,7 +62,7 @@ export default function Header() {
           <button
             key={item.num}
             className={`menu-item ${pathname === item.path ? 'active' : ''}`}
-            onClick={() => handleMenuClick(index, item.path)}
+            onClick={(e) => handleMenuClick(index, item.path, e)}
             disabled={pathname === item.path}
           >
             <span className="menu-num">{item.num}</span>
@@ -63,10 +72,16 @@ export default function Header() {
         ))}
       </nav>
 
-      {/* Expanding Overlay (en dehors du menu) */}
+      {/* Expanding Overlay */}
       {expandingIndex !== null && (
         <div className="expanding-overlay-container">
-          <div className="expanding-overlay" />
+          <div 
+            className="expanding-overlay"
+            style={{
+              left: `${expandOrigin.x}px`,
+              top: `${expandOrigin.y}px`,
+            }}
+          />
         </div>
       )}
 
@@ -185,84 +200,42 @@ export default function Header() {
         }
 
         /* ============================================
-           EXPANDING OVERLAY (séparé du menu)
+           EXPANDING OVERLAY - Animation depuis le centre du bouton
            ============================================ */
         .expanding-overlay-container {
           position: fixed;
           inset: 0;
-          z-index: 9998;
+          z-index: 9999;
           pointer-events: none;
+          overflow: hidden;
         }
 
         .expanding-overlay {
           position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 10px;
-          height: 10px;
           background: white;
           border-radius: 50%;
-          animation: expandFull 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          transform: translate(-50%, -50%);
+          width: 0;
+          height: 0;
+          animation: expandFromCenter 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        @keyframes expandFull {
+        @keyframes expandFromCenter {
           0% {
-            width: 10px;
-            height: 10px;
+            width: 0;
+            height: 0;
             border-radius: 50%;
           }
           50% {
-            width: 100vw;
-            height: 10px;
-            border-radius: 0;
+            width: 150vmax;
+            height: 150vmax;
+            border-radius: 50%;
           }
           100% {
-            width: 100vw;
-            height: 100vh;
-            border-radius: 0;
+            width: 200vmax;
+            height: 200vmax;
+            border-radius: 0%;
           }
-        }
-
-        /* ============================================
-           FOOTER TEXT
-           ============================================ */
-        .header-footer {
-          position: fixed;
-          bottom: 3rem;
-          left: 50%;
-          transform: translateX(-50%);
-          font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.9);
-          font-weight: 300;
-          letter-spacing: 2px;
-          z-index: 50;
-          text-transform: uppercase;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        /* ============================================
-           CORNER TEXTS
-           ============================================ */
-        .corner-text {
-          position: fixed;
-          font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.7);
-          font-weight: 300;
-          letter-spacing: 1px;
-          z-index: 15;
-          text-transform: uppercase;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .top-left {
-          top: 2rem;
-          left: 2rem;
-        }
-
-        .bottom-right {
-          bottom: 2rem;
-          right: 2rem;
         }
 
         /* ============================================
@@ -280,15 +253,6 @@ export default function Header() {
 
           .menu-label {
             font-size: 0.65rem;
-          }
-
-          .corner-text {
-            font-size: 0.55rem;
-          }
-
-          .header-footer {
-            font-size: 0.6rem;
-            bottom: 2rem;
           }
         }
       `}</style>

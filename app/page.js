@@ -10,6 +10,7 @@ export default function Home() {
   const [showTitle, setShowTitle] = useState(false);
   const [showBackground, setShowBackground] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [expandOrigin, setExpandOrigin] = useState({ x: 0, y: 0 });
   const { expandingIndex, startNavigation, endNavigation } = useAnimation();
   const router = useRouter();
 
@@ -29,16 +30,16 @@ export default function Home() {
         
         // Séquence d'animations
         setTimeout(() => {
-          setLoadingComplete(true); // Loading disparaît
+          setLoadingComplete(true);
           
           setTimeout(() => {
-            setShowBackground(true); // Background apparaît
+            setShowBackground(true);
             
             setTimeout(() => {
-              setShowTitle(true); // Titre apparaît avec transition noir → blanc
+              setShowTitle(true);
               
               setTimeout(() => {
-                setShowContent(true); // Menu et message apparaissent
+                setShowContent(true);
               }, 800);
             }, 300);
           }, 500);
@@ -61,8 +62,15 @@ export default function Home() {
     }
   }, [expandingIndex, endNavigation]);
 
-  const handleMenuClick = (index, path) => {
+  const handleMenuClick = (index, path, event) => {
+    // Capturer la position du bouton cliqué
+    const rect = event.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    setExpandOrigin({ x: centerX, y: centerY });
     startNavigation(index);
+    
     setTimeout(() => {
       if (path) router.push(path);
     }, 900);
@@ -98,7 +106,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Background (apparaît après loading) */}
+      {/* Background */}
       {showBackground && (
         <div className={`background-container ${showBackground ? 'visible' : ''}`}>
           <div className="background-image" />
@@ -106,7 +114,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Titre (apparaît avec transition noir → blanc) */}
+      {/* Titre */}
       {showTitle && (
         <div className={`main-title ${showTitle ? 'visible' : ''}`}>
           <span className="title-hybrid">ZORO</span>
@@ -114,7 +122,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Contenu principal (menu + message) */}
+      {/* Contenu principal */}
       {showContent && (
         <>
           {/* Message d'accueil */}
@@ -133,7 +141,7 @@ export default function Home() {
               <button
                 key={item.num}
                 className="menu-item"
-                onClick={() => handleMenuClick(index, item.path)}
+                onClick={(e) => handleMenuClick(index, item.path, e)}
               >
                 <span className="menu-num">{item.num}</span>
                 <span className="menu-label">{item.label}</span>
@@ -142,10 +150,16 @@ export default function Home() {
             ))}
           </nav>
 
-          {/* Expanding Overlay pour transitions */}
+          {/* Expanding Overlay */}
           {expandingIndex !== null && (
             <div className="expanding-overlay-container">
-              <div className="expanding-overlay" />
+              <div 
+                className="expanding-overlay"
+                style={{
+                  left: `${expandOrigin.x}px`,
+                  top: `${expandOrigin.y}px`,
+                }}
+              />
             </div>
           )}
 
@@ -280,7 +294,7 @@ export default function Home() {
         }
 
         /* ============================================
-           MAIN TITLE (avec transition noir → blanc)
+           MAIN TITLE
            ============================================ */
         .main-title {
           position: fixed;
@@ -435,7 +449,7 @@ export default function Home() {
           transition: all 0.3s ease;
         }
 
-        /* Background blanc au hover - toute la hauteur */
+        /* Background blanc au hover */
         .menu-hover-background {
           position: absolute;
           inset: 0;
@@ -462,82 +476,42 @@ export default function Home() {
         }
 
         /* ============================================
-           EXPANDING OVERLAY (transition pleine page)
+           EXPANDING OVERLAY - Animation depuis le centre du bouton
            ============================================ */
         .expanding-overlay-container {
           position: fixed;
           inset: 0;
           z-index: 9999;
           pointer-events: none;
-          display: flex;
-          align-items: flex-start;
-          justify-content: center;
-          padding-top: 3rem;
+          overflow: hidden;
         }
 
         .expanding-overlay {
+          position: absolute;
           background: white;
-          animation: expandToFullPage 0.9s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          width: 0;
+          height: 0;
+          animation: expandFromCenter 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        @keyframes expandToFullPage {
+        @keyframes expandFromCenter {
           0% {
-            width: 120px;
-            height: 50px;
-            border-radius: 4px;
-          }
-          25% {
-            width: 300px;
-            height: 50px;
-            border-radius: 4px;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
           }
           50% {
-            width: 100vw;
-            height: 50px;
-            border-radius: 0;
-          }
-          75% {
-            width: 100vw;
-            height: 60vh;
-            border-radius: 0;
+            width: 150vmax;
+            height: 150vmax;
+            border-radius: 50%;
           }
           100% {
-            width: 100vw;
-            height: 100vh;
-            border-radius: 0;
+            width: 200vmax;
+            height: 200vmax;
+            border-radius: 0%;
           }
-        }
-
-        /* ============================================
-           CORNER TEXTS
-           ============================================ */
-        .corner-text {
-          position: fixed;
-          font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.7);
-          font-weight: 300;
-          letter-spacing: 1px;
-          z-index: 15;
-          text-transform: uppercase;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-          animation: fadeIn 1s ease 1.2s forwards;
-          opacity: 0;
-        }
-
-        @keyframes fadeIn {
-          to {
-            opacity: 1;
-          }
-        }
-
-        .top-left {
-          top: 2rem;
-          left: 2rem;
-        }
-
-        .bottom-right {
-          bottom: 2rem;
-          right: 2rem;
         }
 
         /* ============================================
@@ -557,6 +531,12 @@ export default function Home() {
           text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
           animation: fadeIn 1s ease 1.4s forwards;
           opacity: 0;
+        }
+
+        @keyframes fadeIn {
+          to {
+            opacity: 1;
+          }
         }
 
         /* ============================================
@@ -598,10 +578,6 @@ export default function Home() {
 
           .menu-label {
             font-size: 0.65rem;
-          }
-
-          .corner-text {
-            font-size: 0.55rem;
           }
 
           .footer-text {
